@@ -1,0 +1,274 @@
+{% extends 'base_layout.html' %}
+
+{% block title %}WebPage{% endblock %}
+
+{% block content %}
+
+    {% load static %}
+    <div class="container pt-5">
+        <div class="container">
+            <h1>Targets</h1>
+        </div>
+        <main role="main" class="inner cover">
+            <div class="container">Time to add a new target? Add it by pressing here
+                <!-- Button trigger modal -->
+                <div class="btn-group btn-group-sm custom-switch px-1" role="group">
+                    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addTarget">
+                        Add
+                    </button>
+                </div>
+            </div>
+            <br>
+            <br>
+
+            <!-- Modal AddTarget -->
+            <div class="modal fade" id="addTarget" data-backdrop="static" data-keyboard="false" tabindex="-1"
+                 aria-labelledby="addTargetLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-tint-black" id="addTargetLabel">Add target:</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body m-2">
+                            <form method="POST" id="target-create">
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Target name:</label>
+                                    <input type="text" class="form-control" id="targetName" name="targetName"
+                                           aria-describedby="emailHelp" placeholder="Enter target's name">
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="domainList">Enter domain list</label>
+                                    <textarea class="form-control" id="domainList" rows="3"
+                                              name="domainList"></textarea>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="exclusionsList">Exclusions</label>
+                                    <textarea class="form-control" id="exclusionsList" rows="3"
+                                              name="exclusionsList"></textarea>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="additionalInfo">Additional Info</label>
+                                    <textarea class="form-control" id="exclusionsList" rows="3"
+                                              name="exclusionsList"></textarea>
+                                </div>
+                                <div class="form-check mt-3">
+                                    <input type="checkbox" class="form-check-input" id="superThrottle">
+                                    <label class="form-check-label" for="super_throttle" name="super_throttle">Super
+                                        Throttle</label>
+                                </div>
+                                <div class="modal-footer mt-3">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-warning" value="submit">Upload</button>
+                                </div>
+                                {% csrf_token %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="container pt-2 p-lg-1">
+            <div class="col-12">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Target Name</th>
+                            <th scope="col">Domain List</th>
+                            <th scope="col">Exclusion List</th>
+                            <th scope="col">Super Throttle</th>
+                            <th scope="col">Additional Info</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in targets %}
+                            <tr>
+                                <th scope="row">{{ item.id }}</th>
+                                {#                                implement a different one later on a custom css #}
+                                <td><a class="text-decoration-none"
+                                       href="{% url 'attack' item.id %}">{{ item.target_name }}</a></td>
+                                <td>{{ item.short_domain_list }}</td>
+                                <td>{{ item.short_exclusion_list }}</td>
+                                <td>{{ item.super_throttle }}</td>
+                                <td>{{ item.additional_info }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-success" data-toggle="modal"
+                                            data-target="#viewTarget{{ item.id }}">View
+                                    </button>
+                                    <div class="modal fade" id="viewTarget{{ item.id }}" data-backdrop="static"
+                                         data-keyboard="false"
+                                         tabindex="-1"
+                                         aria-labelledby="addTargetLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-tint-black" id="addTargetLabel">View
+                                                        target:</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body m-2">
+                                                    <form method="POST" id="target-view{{ item.id }}">
+                                                        <input type="hidden" class="form-control"
+                                                               id="viewTargetID{{ item.id }}"
+                                                               name="viewTargetID{{ item.id }}"
+                                                               aria-describedby="emailHelp"
+                                                               value="{{ item.id }}" readonly>
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Target name:</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="viewTargetName{{ item.id }}"
+                                                                   name="viewTargetName{{ item.id }}"
+                                                                   aria-describedby="emailHelp"
+                                                                   placeholder="Enter target's name"
+                                                                   value="{{ item.target_name }}" readonly>
+                                                        </div>
+                                                        <div class="form-group mt-3">
+                                                            <label for="exampleFormControlTextarea1">Domain
+                                                                list:</label>
+                                                            <textarea class="form-control"
+                                                                      id="viewDomainList{{ item.id }}" rows="3"
+                                                                      name="viewDomainList{{ item.id }}"
+                                                                      readonly>{{ item.domain_list }}</textarea>
+                                                        </div>
+                                                        <div class="form-group mt-3">
+                                                            <label for="exampleFormControlTextarea1">Exclusions:</label>
+                                                            <textarea class="form-control"
+                                                                      id="viewExclusionsList{{ item.id }}" rows="3"
+                                                                      name="viewExclusionsList{{ item.id }}"
+                                                                      readonly>{{ item.exclusion_list }}</textarea>
+                                                        </div>
+                                                        <div class="form-group mt-3">
+                                                            <label for="exampleFormControlTextarea1">Additional Info:</label>
+                                                            <textarea class="form-control"
+                                                                      id="viewAdditionalInfo{{ item.id }}" rows="3"
+                                                                      name="viewAdditionalInfo{{ item.id }}"
+                                                                      readonly>{{ item.additional_info }}</textarea>
+                                                        </div>
+                                                        <div class="form-check mt-3">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                   id="superThrottle">
+                                                            <label class="form-check-label" for="super_throttle"
+                                                                   name="super_throttle" readonly>Super
+                                                                Throttle</label>
+                                                        </div>
+                                                        <div class="modal-footer mt-3">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Close
+                                                            </button>
+                                                        </div>
+                                                        {% csrf_token %}
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+
+                                    <button type="button" class="btn btn-sm btn-warning" data-toggle="modal"
+                                            data-target="#editTarget{{ item.id }}">Edit
+                                    </button>
+                                    <div class="modal fade" id="editTarget{{ item.id }}" data-backdrop="static"
+                                         data-keyboard="false"
+                                         tabindex="-1"
+                                         aria-labelledby="addTargetLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title text-tint-black" id="addTargetLabel">Edit
+                                                        target:</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body m-2">
+                                                    <form method="POST" id="target-edit{{ item.id }}">
+                                                        <input type="hidden" class="form-control"
+                                                               id="editTargetID{{ item.id }}"
+                                                               name="editTargetID{{ item.id }}"
+                                                               aria-describedby="emailHelp"
+                                                               value="{{ item.id }}">
+                                                        <div class="form-group">
+                                                            <label for="exampleInputEmail1">Target name:</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="editTargetName{{ item.id }}"
+                                                                   name="editTargetName{{ item.id }}"
+                                                                   aria-describedby="emailHelp"
+                                                                   placeholder="Enter target's name"
+                                                                   value="{{ item.target_name }}">
+                                                        </div>
+                                                        <div class="form-group mt-3">
+                                                            <label for="exampleFormControlTextarea1">Enter domain
+                                                                list</label>
+                                                            <textarea class="form-control"
+                                                                      id="editDomainList{{ item.id }}" rows="3"
+                                                                      name="editDomainList{{ item.id }}">{{ item.domain_list }}</textarea>
+                                                        </div>
+                                                        <div class="form-group mt-3">
+                                                            <label for="exampleFormControlTextarea1">Exclusions</label>
+                                                            <textarea class="form-control"
+                                                                      id="editExclusionsList{{ item.id }}" rows="3"
+                                                                      name="editExclusionsList{{ item.id }}">{{ item.exclusion_list }}</textarea>
+                                                        </div>
+                                                        <div class="form-group mt-3">
+                                                            <label for="exampleFormControlTextarea1">Additional Info</label>
+                                                            <textarea class="form-control"
+                                                                      id="editAdditionalInfo{{ item.id }}" rows="3"
+                                                                      name="editAdditionalInfo{{ item.id }}">{{ item.additional_info }}</textarea>
+                                                        </div>
+                                                        <div class="form-check mt-3">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                   id="superThrottle">
+                                                            <label class="form-check-label" for="super_throttle"
+                                                                   name="super_throttle">Super
+                                                                Throttle</label>
+                                                        </div>
+                                                        <div class="modal-footer mt-3">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Close
+                                                            </button>
+                                                            <button type="submit" id="{{ item.id }}"
+                                                                    class="btn btn-warning" onclick="edit_form(this.id)"
+                                                                    value="submit">Update
+                                                            </button>
+                                                        </div>
+                                                        {% csrf_token %}
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                            data-target="#staticBackdrop" onclick="removeTarget({{ item.id }})">Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+{% block additional_scripts %}
+    <script src="{% static 'target_script.js' %}"></script>
+{% endblock %}
